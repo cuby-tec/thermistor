@@ -96,66 +96,10 @@ int main(void) {
 	}// for
 #endif
 
-	const	float measure = 91;//37;//20;//10;//0.148;
-	const float step = 0.001;
+	const	float measure = 91;//6.6;//91;//37;//20;//10;//0.148;
 
-	float res = 0;
-	float temperature = 0;
+	printf("main:Tmperature:%.2f for resist:%.2f",get_temperature(measure),measure);
 
-	init_terminstor(measure);
-
-	int wk1 = wk_1(9);
-	int wk2 = wk1;
-
-	float section[2][2];	// Метод секущих.
-
-	res = thermistor[wk2].resistance;
-
-	printf("Termistor index %d:temperature %d, resist %.2f\n",wk1,thermistor[wk1].temperature, thermistor[wk1].resistance);
-//
-//
-//	wk1 = wk_1(24);
-//
-//	printf("Termistor index %d:temperature %d, resist %.2f\n",wk1,thermistor[wk1].temperature, thermistor[wk1].resistance);
-	while((res - measure)>0)
-	{
-		wk2 = wk_1(wk1);
-		if(wk2<0)
-			break;
-		wk1 = wk2;
-		res = thermistor[wk2].resistance;
-		printf("Index : %d res:%f  diff:%f\n",wk2,res,(res-measure));
-	}
-	printf("Termistor index %d:temperature %d, resist %.2f\n",wk1,thermistor[wk1].temperature, thermistor[wk1].resistance);
-
-
-
-
-//	temperature =  101.0;//100.5852890819; //100.5921931868; //100.4;
-// вычисление точного значения температуры для заданного сопротивления.
-	section[0][0] = thermistor[wk1].temperature;
-	section[0][1] = thermistor[wk1].resistance - measure;
-
-	section[1][0] = section[0][0]*(1-step);
-	section[1][1] = p3(wk1,section[1][0]) - measure;
-
-	// Певая производная
-	float derivative = 0;
-	float x1;
-
-	for(int i=0;i<3;i++){
-
-		derivative = (section[1][1] - section[0][1])/(section[1][0] - section[0][0]);
-		x1 = section[1][0] - section[1][1]/derivative;
-		section[0][0] = section[1][0];
-		section[0][1] = section[1][1];
-		section[1][0] = x1;
-		section[1][1] = p3(wk1,section[1][0]) - measure;
-	}
-
-//	res = p3(wk1,temperature);
-
-	printf("Resistor: %f temperature:%f diff:%f \n",measure,section[1][0],(section[1][1]));
 
 	return EXIT_SUCCESS;
 }
