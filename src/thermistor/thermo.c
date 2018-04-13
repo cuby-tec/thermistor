@@ -7,8 +7,9 @@
  */
 
 #include "thermo.h"
-
-
+#ifndef PART_TM4C123GH6PM
+#include <stdio.h>
+#endif
 //------- defs
 
 #define STEP	0.001
@@ -27,6 +28,7 @@ static float target;
 static
 void init_terminstor(float _target)
 {
+    _ndex = 0;
 	target = _target;
 	arr_index[_ndex++] = 7;
 	arr_index[_ndex] = 8;
@@ -65,8 +67,9 @@ int wk_1(int index)
 		result = s;
 	}
 	else
-		result = -1;
-
+	    result = -1;
+	if(result == b)
+	    result ++;
 	arr_index[_ndex]=result;
 
 	return result;
@@ -85,7 +88,7 @@ float p3(int index, float temp)
 	float df[3][3];
 
 	float q;
-
+	int i;
 	const float step = 1.0;
 
 //	data[3].temperature = index;	//131
@@ -93,7 +96,7 @@ float p3(int index, float temp)
 //	data[1].temperature = index -2;	//129
 //	data[0].temperature = index-3;	//128
 
-	for(int i=0;i<4;i++ )
+	for(i=0;i<4;i++ )
 	{
 		data[i].resistance = thermistor[index +i-3].resistance;
 		data[i].temperature = thermistor[index +i-3].temperature;
@@ -125,6 +128,7 @@ static
 float secant(int index)
 {
 //	float result;
+    int i;
 	float secant[2][2];	// Метод секущих.
 
 	secant[0][0] = thermistor[index].temperature;
@@ -137,7 +141,7 @@ float secant(int index)
 	float derivative = 0;
 	float x1;
 
-	for(int i=0;i<3;i++){
+	for(i=0;i<3;i++){
 
 		derivative = (secant[1][1] - secant[0][1])/(secant[1][0] - secant[0][0]);
 		x1 = secant[1][0] - secant[1][1]/derivative;
@@ -148,8 +152,9 @@ float secant(int index)
 	}
 
 //	res = p3(wk1,temperature);
-
+#ifndef PART_TM4C123GH6PM
 	printf("Resistor: %f temperature:%f diff:%f \n",target,secant[1][0],(secant[1][1]));
+#endif
 
 
 	return secant[1][0];
@@ -167,8 +172,9 @@ float get_temperature(float target)
 	int wk2 = wk1;
 
 	res = thermistor[wk2].resistance;
-
+#ifndef PART_TM4C123GH6PM
 	printf("Termistor index %d:temperature %d, resist %.2f\n",wk1,thermistor[wk1].temperature, thermistor[wk1].resistance);
+#endif
 
 	while((res - target)>0)
 	{
@@ -177,10 +183,13 @@ float get_temperature(float target)
 			break;
 		wk1 = wk2;
 		res = thermistor[wk2].resistance;
+#ifndef PART_TM4C123GH6PM
 		printf("Index : %d res:%f  diff:%f\n",wk2,res,(res-target));
+#endif
 	}
+#ifndef PART_TM4C123GH6PM
 	printf("Termistor index %d:temperature %d, resist %.2f\n",wk1,thermistor[wk1].temperature, thermistor[wk1].resistance);
-
+#endif
 	temperature = secant(wk1);
 
 	return temperature;

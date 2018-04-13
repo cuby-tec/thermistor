@@ -87,6 +87,9 @@ uint32_t tick_get()
 	return ticks;
 }
 #define EXAMPLE1
+
+#define DEBUG_TERMISTOR
+
 int main(void) {
 //	puts("!!!Hello World!!!"); /* prints !!!Hello World!!! */
 	int i;
@@ -225,11 +228,15 @@ plot 'silver.dat' u 1:2:3 "%lf %lf %lf" w filledcu,       '' u 1:2 lt -1 notitle
 
 #endif
 
+#define SST3	3926
 
+#define ADC	4096.0/SST3
 
 #endif
 #ifdef DEBUG_TERMISTOR
-	const	float measure = 91;//6.6;//91;//37;//20;//10;//0.148;
+	float measure = 85.258878505;//91;//6.6;//91;//37;//20;//10;//0.148;
+
+	measure = 4.7/((ADC)-1);
 
 	printf("main:Tmperature:%.2f for resist:%.2f",get_temperature(measure),measure);
 #endif
